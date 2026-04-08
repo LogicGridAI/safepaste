@@ -34,3 +34,6 @@ logs/
 # ZIP artifacts
 *.zip
 "@ | Out-File -FilePath .gitignore -Encoding utf8
+
+vault.js
+content_min.js
