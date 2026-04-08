@@ -1,0 +1,36 @@
+@"
+# Vault and license files
+.safepaste/
+vault.json
+*.vault
+
+# Environment and secrets
+.env
+.env.*
+*.pem
+*.key
+secrets.*
+
+# Python
+__pycache__/
+*.pyc
+dist/
+build/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# ZIP artifacts
+*.zip
+"@ | Out-File -FilePath .gitignore -Encoding utf8

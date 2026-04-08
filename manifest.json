@@ -1,0 +1,52 @@
+{
+  "manifest_version": 3,
+  "name": "SafePaste Enterprise",
+  "version": "3.2.1",
+  "description": "Zero-trust DLP: intercept sensitive data before it reaches AI. Pro unlocks full vault, green-lock reveal, and exfiltration shield.",
+  "permissions": [
+    "storage",
+    "clipboardRead",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "https://api.safepaste.app/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "SafePaste Enterprise",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "all_frames": true,
+      "match_about_blank": true,
+      "js": [
+        "vault.js",
+        "patterns.js",
+        "content_min.js"
+      ],
+      "run_at": "document_idle",
+      "world": "ISOLATED"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none';"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
