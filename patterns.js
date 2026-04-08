@@ -244,4 +244,68 @@ const THREAT_PATTERNS = Object.freeze([
       return false;
     },
   },
+
+  {
+    type: 'BTC_ADDRESS',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    regex: /\b1[a-km-zA-HJ-NP-Z1-9]{25,34}\b/g,
+  },
+  {
+    type: 'BTC_ADDRESS',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    regex: /\b3[a-km-zA-HJ-NP-Z1-9]{25,34}\b/g,
+  },
+  {
+    type: 'BTC_ADDRESS',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    regex: /\bbc1[a-z0-9]{6,87}\b/gi,
+  },
+  {
+    type: 'ETH_ADDRESS',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    regex: /\b0x[a-fA-F0-9]{40}\b/g,
+  },
+  {
+    type: 'CRYPTO_KEY',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    regex: /\b[a-fA-F0-9]{64}\b/g,
+  },
+  {
+    type: 'CRYPTO_KEY',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    regex: /\b[5KL][1-9A-HJ-NP-Za-km-z]{50,51}\b/g,
+  },
+  {
+    type: 'GEMINI_KEY',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    regex: /\bAIza[0-9A-Za-z\-_]{35}\b/g,
+  },
+  {
+    type: 'SOL_ADDRESS',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    regex: /\b[1-9A-HJ-NP-Za-km-z]{44}\b/g,
+  },
+  {
+    type: 'ENV_VALUE',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    regex: /(?<=^[A-Z][A-Z0-9_]*=).+$/gm,
+  },
 ]);
