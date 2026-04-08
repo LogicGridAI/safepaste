@@ -276,8 +276,8 @@ const THREAT_PATTERNS = Object.freeze([
   {
     type: 'CRYPTO_KEY',
     group: 'devsec',
-    freeTier: true,
-    basic: true,
+    freeTier: false,
+    basic: false,
     regex: /\b[a-fA-F0-9]{64}\b/g,
   },
   {
@@ -297,8 +297,8 @@ const THREAT_PATTERNS = Object.freeze([
   {
     type: 'SOL_ADDRESS',
     group: 'devsec',
-    freeTier: true,
-    basic: true,
+    freeTier: false,
+    basic: false,
     regex: /\b[1-9A-HJ-NP-Za-km-z]{44}\b/g,
   },
   {
