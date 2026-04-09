@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SafePaste Enterprise",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "Zero-trust DLP: intercept sensitive data before it reaches AI. Pro unlocks full vault, green-lock reveal, and exfiltration shield.",
   "permissions": [
     "storage",
