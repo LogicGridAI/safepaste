@@ -308,4 +308,40 @@ const THREAT_PATTERNS = Object.freeze([
     basic: true,
     regex: /(?<=^[A-Z][A-Z0-9_]*=).+$/gm,
   },
+  {
+    type: 'SEED_PHRASE',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    regex: /\b([a-z]+\s){11}[a-z]+\b/g,
+    validate(m) {
+      const words = m.trim().split(/\s+/)
+      return words.length === 12
+    }
+  },
+  {
+    type: 'SEED_PHRASE',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    regex: /\b([a-z]+\s){23}[a-z]+\b/g,
+    validate(m) {
+      const words = m.trim().split(/\s+/)
+      return words.length === 24
+    }
+  },
+  {
+    type: 'ETH_PRIVATE_KEY',
+    group: 'devsec',
+    freeTier: false,
+    basic: false,
+    regex: /\b0x[a-fA-F0-9]{64}\b/g,
+  },
+  {
+    type: 'PEM_KEY',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    regex: /-----BEGIN\s(?:RSA\s|EC\s|OPENSSH\s)?PRIVATE KEY-----/g,
+  },
 ]);
