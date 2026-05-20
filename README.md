@@ -1,61 +1,110 @@
 # SafePaste Enterprise CLI
 
-**Zero-Trust Data Loss Prevention (DLP) for Linux pipelines.** SafePaste operates natively on standard I/O streams (`stdin` to `stdout`), automatically intercepting and redacting sensitive data (IPs, AWS Keys, Credit Cards, NINs, SSNs) before it leaves your machine or gets ingested by AI models.
+> Zero-trust DLP for Linux pipelines — 35+ threat patterns across 8+ countries.
+
+[![PyPI](https://img.shields.io/pypi/v/safepaste-enterprise)](https://pypi.org/project/safepaste-enterprise/)
+[![Docker Hub](https://img.shields.io/badge/Docker-logicgridai%2Fsafepaste-blue)](https://hub.docker.com/r/logicgridai/safepaste)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue)](https://safepaste.app)
+
+SafePaste redacts sensitive data in your Linux pipelines before it reaches AI tools, log aggregators, or external services.
+BEFORE                                    AFTER (SafePaste)
+─────────────────────────────────         ─────────────────────────────────
+OPENAI_API_KEY=[ENV_VALUE_1]
+AWS_ACCESS_KEY_ID=[ENV_VALUE_2]
+Authorization: Bearer eyJhb...            Authorization: Bearer [BEARER_1]
+Server: [IP_1]                      Server: [DEVSEC_1]
+SSN: [US_SSN_1]                          SSN: [US_SSN_1]
 
 ## Installation
-Drop the compiled binary into your local bin path for global access:
+
 ```bash
-sudo mv safepaste /usr/local/bin/
-sudo chmod +x /usr/local/bin/safepaste
-Basic Usage (The Unix Pipeline)
-SafePaste is designed to be piped into standard Linux workflows.
+pip install safepaste-enterprise
 
-Masking Logs:
+# With Redis support (enterprise distributed vault)
+pip install safepaste-enterprise[redis]
+```
 
-Bash
-cat /var/log/syslog | safepaste > clean.log
-docker logs my-app | safepaste > clean-docker.log
-Sensitive data is replaced with cryptographically secure placeholders (e.g., [DEVSEC_a3f9b2c1]).
+Requires Python 3.9+. No external dependencies for the base install.
 
-Unmasking Logs (Pro Only):
-When the AI returns an analysis, pipe it back through SafePaste to restore the original data using your local RAM vault:
+## Usage
 
-Bash
+```bash
+# Free tier — mask IPs and API keys
+cat /var/log/app.log | safepaste --mask
+
+# Pro tier — full vault with unmask
+docker logs my-app | safepaste --mask > clean.log
 cat ai_response.txt | safepaste --unmask
-Configuration & Management
-SafePaste stores its configuration and vault entirely locally in ~/.safepaste/. Manage your Zero-Trust policies directly from the terminal:
 
-safepaste --status : View your current license tier and active security toggles.
+# Activate Pro
+safepaste --unlock "YOUR-LICENSE-KEY"
 
-safepaste --toggle-devsec : Enable/disable DevSec mode (IPs, MACs, API Keys).
+# Status
+safepaste --status
+```
 
-safepaste --toggle-fintech : Enable/disable FinTech Shield (Credit Cards, SSNs, IBANs, NINs).
+## What gets redacted
 
-safepaste --add-nda "ProjectNova" : Add a custom, proprietary keyword to be aggressively redacted.
+| Pattern | Free | Pro |
+|---------|------|-----|
+| IPv4 addresses | ✓ | ✓ |
+| API keys (OpenAI, Anthropic, AWS, GitHub, Slack, Gemini) | ✓ | ✓ |
+| Bitcoin / Ethereum addresses | ✓ | ✓ |
+| PEM private keys | ✓ | ✓ |
+| .env file values | ✓ | ✓ |
+| MAC addresses | — | ✓ |
+| Credit cards (Luhn-validated) | — | ✓ |
+| US SSN | — | ✓ |
+| EU IBAN | — | ✓ |
+| UK NINO | — | ✓ |
+| Nigeria NIN / Bank / Phone | — | ✓ |
+| Canada SIN | — | ✓ |
+| India Aadhaar / PAN | — | ✓ |
+| South Africa ID | — | ✓ |
+| Australia TFN | — | ✓ |
+| Brazil CPF | — | ✓ |
+| Singapore NRIC | — | ✓ |
+| Germany Tax ID | — | ✓ |
+| Seed phrases (12/24 word) | — | ✓ |
+| ETH private keys | — | ✓ |
+| Custom NDA keywords | — | ✓ |
 
-safepaste --remove-nda "ProjectNova" : Remove a custom keyword.
+## Docker
 
-Licensing (Freemium vs. Pro)
-The Free tier permanently redacts IP addresses and standard API keys.
-To unlock the reversible vault, FinTech Shield, and Custom NDAs, activate your Gumroad LogicGrid Pro License:
+```bash
+docker pull logicgridai/safepaste:latest
 
-Bash
-safepaste --unlock "YOUR_GUMROAD_LICENSE_KEY"
-Enterprise Deployment (Docker & Kubernetes)
-safepaste operates natively on standard I/O streams, making it perfectly suited for containerized pipelines, DaemonSets, and Sidecars.
+cat /var/log/app.log | docker run --rm -i logicgridai/safepaste --mask
+```
 
-Because container filesystems are ephemeral, running safepaste natively inside a pod will destroy the vault mapping upon container restart. To maintain persistent, distributed redaction state across a multi-node cluster, you have two native options:
+## Kubernetes sidecar
 
-Option 1: Persistent Volumes (Simple)
-Mount a PVC to the default vault directory (~/.safepaste/) inside your sidecar container.
+```yaml
+containers:
+  - name: safepaste
+    image: logicgridai/safepaste:3.4.1
+    env:
+      - name: SAFEPASTE_LICENSE_KEY
+        valueFrom:
+          secretKeyRef:
+            name: safepaste-secret
+            key: license-key
+```
 
-Option 2: Distributed Redis Cache (Enterprise/AIOps)
-For high-throughput, multi-pod clusters, safepaste natively supports Redis.
+## Pricing
 
-Ensure the redis module is installed (pip install redis).
+| Tier | Price | Features |
+|------|-------|---------|
+| Free | $0 | IP + API key redaction |
+| Pro | $7.99/month or $59/year | 35+ patterns, full vault |
+| SafeRelay Suite | $99 one-time | SafePaste + SpeakPaste + Boomerang Snip |
 
-Inject your Redis connection string via environment variable:
+→ [Get a license at safepaste.app](https://safepaste.app)
 
-Bash
-export SAFEPASTE_REDIS_URL="redis://:password@redis-master.default.svc.cluster.local:6379/0"
-When this variable is detected, safepaste entirely bypasses the local disk and instantly syncs its zero-trust mappings to your centralized Redis cache, allowing any authorized pod in the cluster to mask or unmask logs dynamically.
+## Privacy
+
+Clipboard and log content never leaves your machine. License activation sends only a hashed device fingerprint to `api.safepaste.app` — no log data, ever.
+
+Full privacy policy: [safepaste.app/privacy](https://safepaste.app/privacy)
+
+**Built by [LogicGrid AI, LLC](https://logicgrid.ai)** — support@logicgrid.ai
