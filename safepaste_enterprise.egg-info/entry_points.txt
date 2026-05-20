@@ -1,2 +1,0 @@
-[console_scripts]
-safepaste = safepaste.__main__:main
