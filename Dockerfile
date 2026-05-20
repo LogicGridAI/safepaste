@@ -1,12 +1,16 @@
-FROM python:3.12-slim
-
+FROM python:3.12-alpine
 WORKDIR /app
 
-COPY safepaste_v3.4.1.py /app/safepaste.py
+RUN apk add --no-cache gcc musl-dev
 
-RUN pip install --no-cache-dir redis
+COPY safepaste/ /app/safepaste/
+COPY setup.py /app/
+COPY README.md /app/
 
-RUN ln -s /app/safepaste.py /usr/local/bin/safepaste && \
-    chmod +x /app/safepaste.py
+RUN pip install --no-cache-dir -e ".[redis]" && \
+    apk del gcc musl-dev
 
-ENTRYPOINT ["python", "/app/safepaste.py"]
+RUN adduser -D safepaste
+USER safepaste
+
+ENTRYPOINT ["safepaste"]
